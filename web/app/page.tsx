@@ -15,9 +15,10 @@ export default async function Home() {
       ) : (
         <ul>
           {listings.map((listing) => (
-            <li key={listing.name}>
-              {listing.name} — {listing.capability} — ${listing.basePriceUsd} (
-              {lamportsToSol(listing.basePriceLamports)} SOL)
+            <li key={listing.capability}>
+              {listing.name} — {listing.capability} — base ${listing.basePriceUsd},
+              now ${listing.currentPriceUsd} (
+              {lamportsToSol(listing.currentPriceLamports)} SOL)
             </li>
           ))}
         </ul>

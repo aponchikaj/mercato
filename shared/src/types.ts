@@ -16,6 +16,12 @@ export interface ServiceListingWithPrice extends ServiceListing {
   basePriceLamports: number;
 }
 
+/** A marketplace seller with current surge-adjusted pricing. */
+export interface MarketService extends ServiceListing {
+  currentPriceUsd: number;
+  currentPriceLamports: number;
+}
+
 /** Payment terms quoted by a seller for a single purchase. */
 export interface PaymentRequirements {
   amountLamports: number;

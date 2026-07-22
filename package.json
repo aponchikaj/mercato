@@ -9,7 +9,8 @@
     "typecheck": "pnpm -r typecheck",
     "test:transfer": "pnpm --filter @mercato/shared build && pnpm --filter @mercato/tests test",
     "gen:keys": "tsx scripts/gen-keys.ts",
-    "airdrop": "tsx scripts/airdrop.ts"
+    "airdrop": "tsx scripts/airdrop.ts",
+    "check:surge": "pnpm --filter @mercato/shared build && tsx scripts/check-surge.ts"
   },
   "devDependencies": {
     "@mercato/shared": "workspace:*",
