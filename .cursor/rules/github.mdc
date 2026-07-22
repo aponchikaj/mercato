@@ -1,0 +1,81 @@
+---
+description: GitHub workflow for the 5-person team — pull, branch, merge, conflicts, push
+alwaysApply: true
+---
+
+# GitHub workflow (team of 5)
+
+Default branch: **`main`**. Remote: **`origin`**. Use **`gh`** for PRs/issues when the user asks.
+
+## Before you start work
+
+1. `git fetch origin`
+2. `git pull origin main` (or pull your feature branch after rebasing on latest main)
+3. Run `pnpm install` if `pnpm-lock.yaml` changed
+4. Run `pnpm typecheck && pnpm test:transfer` — fix failures before new work
+
+## Branching
+
+- **Never force-push `main`** unless the user explicitly requests it.
+- One person, one feature branch: `feat/<short-name>`, `fix/<short-name>`, or `shared/<change>`.
+- **`shared/` contract changes**: branch `shared/<change>`, merge to `main` first, then everyone rebases/pulls before continuing backend/web work.
+- Keep branches short-lived (1–2 days). Delete after merge.
+
+## Committing
+
+- **Only commit when the user asks.** If unclear, ask first.
+- Stage focused changes; never commit `.env`, secrets, `keys/`, or local agent notes/config (ignored via local excludes).
+- Message style: imperative, 1–2 sentences, focus on *why* (match existing log).
+- After editing `shared/`, mention teammates must pull and rebuild: `pnpm --filter @mercato/shared build`.
+- Before push: no AI-assistant names or attribution anywhere in tracked files, commit messages, or PR bodies.
+
+## Pulling & staying up to date
+
+```bash
+git fetch origin
+git pull --rebase origin main   # on your feature branch
+```
+
+- Prefer **rebase** over merge commits on feature branches (linear history).
+- If already pushed and rebase rewrites history, use `git push --force-with-lease` **only on your feature branch**, never on `main`.
+
+## Merge conflicts
+
+1. `git fetch origin && git rebase origin/main` (or `git merge origin/main` if the team chose merge workflow).
+2. Open each conflicted file; look for `<<<<<<<`, `=======`, `>>>>>>>`.
+3. Resolve by keeping the correct combined logic — don't blindly pick "ours" or "theirs".
+4. For `pnpm-lock.yaml` conflicts: accept one side, then run `pnpm install` and commit the regenerated lockfile.
+5. For `shared/` conflicts: coordinate — contracts must stay consistent (types + schemas together).
+6. `git add <resolved-files>` then `git rebase --continue` (or complete the merge commit).
+7. Run `pnpm typecheck && pnpm test:transfer` before pushing.
+
+## Pull requests (preferred for team review)
+
+1. Push branch: `git push -u origin HEAD`
+2. Create PR to `main` with `gh pr create`
+3. PR body: Summary (what/why) + Test plan checklist
+4. Wait for review or pair-approve before merge
+5. Merge via GitHub (squash or merge commit — team default: **squash** for feature branches)
+6. Delete remote branch after merge; locally: `git checkout main && git pull origin main`
+
+## Direct push to main
+
+Only when the user explicitly asks (e.g. solo hotfix). Still run pre-push checks:
+
+```bash
+pnpm typecheck && pnpm test:transfer
+git push origin main
+```
+
+## Agent git safety (never break these)
+
+- Never `git config` changes, `--no-verify`, or `push --force` to `main`
+- Never skip hooks unless the user explicitly requests it
+- Never amend a pushed commit unless the user explicitly requests it
+- Never push `.env` or credentials
+
+## Handoff when contracts change
+
+When `shared/` lands on `main`, post in team chat (or PR comment):
+
+> `shared/` updated on main — pull, `pnpm install`, `pnpm --filter @mercato/shared build`, then continue your branch.

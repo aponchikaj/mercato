@@ -7,9 +7,12 @@
     "dev": "pnpm --filter @mercato/shared build && pnpm -r --parallel dev",
     "build": "pnpm -r build",
     "typecheck": "pnpm -r typecheck",
-    "test:transfer": "pnpm --filter @mercato/shared build && pnpm --filter @mercato/tests test"
+    "test:transfer": "pnpm --filter @mercato/shared build && pnpm --filter @mercato/tests test",
+    "gen:keys": "tsx scripts/gen-keys.ts"
   },
   "devDependencies": {
+    "@solana/web3.js": "^1.98.0",
+    "tsx": "^4.20.3",
     "typescript": "^5.8.3"
   }
 }
