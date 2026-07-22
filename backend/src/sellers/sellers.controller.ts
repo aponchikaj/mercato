@@ -59,6 +59,7 @@ export class SellersController {
       return;
     }
 
+    this.sellers.consumeQuote(quote.quoteId);
     this.surge.recordRequest(capability);
     const fixture = this.sellers.serveFixture(capability, body);
     const timestamp = Date.now();

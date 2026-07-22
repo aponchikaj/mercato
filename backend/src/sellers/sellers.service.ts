@@ -14,6 +14,8 @@ import {
   translate,
 } from "./fixtures";
 
+const QUOTE_TTL_MS = 5 * 60_000;
+
 interface StoredQuote {
   capability: string;
   amountLamports: number;
@@ -24,7 +26,6 @@ interface StoredQuote {
 export class SellersService implements OnModuleInit {
   private readonly recipients = new Map<string, string>();
   private readonly quotes = new Map<string, StoredQuote>();
-  private readonly latestQuoteId = new Map<string, string>();
 
   constructor(
     private readonly keys: KeysService,
@@ -66,24 +67,25 @@ export class SellersService implements OnModuleInit {
       quoteId: randomUUID(),
     });
 
+    this.pruneExpiredQuotes();
     this.quotes.set(requirements.quoteId, {
       capability: seller.capability,
       amountLamports: requirements.amountLamports,
       issuedAt: Date.now(),
     });
-    this.latestQuoteId.set(seller.capability, requirements.quoteId);
     return requirements;
   }
 
   resolveQuote(
     capability: string,
-    quoteId: string | undefined,
+    quoteId: string,
   ): PaymentRequirements | undefined {
-    const id = quoteId ?? this.latestQuoteId.get(capability);
-    if (!id) return undefined;
-
-    const stored = this.quotes.get(id);
+    const stored = this.quotes.get(quoteId);
     if (!stored || stored.capability !== capability) return undefined;
+    if (Date.now() - stored.issuedAt > QUOTE_TTL_MS) {
+      this.quotes.delete(quoteId);
+      return undefined;
+    }
 
     const seller = this.findSeller(capability);
     if (!seller) return undefined;
@@ -93,8 +95,22 @@ export class SellersService implements OnModuleInit {
       token: "SOL",
       recipient: this.getRecipient(capability),
       network: "solana-devnet",
-      quoteId: id,
+      quoteId,
     });
+  }
+
+  /** One quote redeems one purchase — drop it once payment is verified. */
+  consumeQuote(quoteId: string): void {
+    this.quotes.delete(quoteId);
+  }
+
+  private pruneExpiredQuotes(): void {
+    const cutoff = Date.now() - QUOTE_TTL_MS;
+    for (const [id, quote] of this.quotes) {
+      if (quote.issuedAt < cutoff) {
+        this.quotes.delete(id);
+      }
+    }
   }
 
   serveFixture(capability: string, body: unknown): unknown {
