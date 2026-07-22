@@ -12,7 +12,9 @@ import { AppModule } from "./app.module";
 async function bootstrap(): Promise<void> {
   const env = parseEnv();
   const app = await NestFactory.create(AppModule);
-  app.enableCors({ origin: "http://localhost:3000" });
+  app.enableCors({
+    origin: ["http://localhost:3000", "http://localhost:5173"],
+  });
   await app.listen(env.BACKEND_PORT);
   // eslint-disable-next-line no-console
   console.log(`[mercato-backend] listening on http://localhost:${env.BACKEND_PORT}`);
