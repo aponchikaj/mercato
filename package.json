@@ -10,6 +10,7 @@
     "test:transfer": "pnpm --filter @mercato/shared build && pnpm --filter @mercato/tests test",
     "gen:keys": "tsx scripts/gen-keys.ts",
     "airdrop": "tsx scripts/airdrop.ts",
+    "seed:sellers": "pnpm --filter @mercato/shared build && tsx scripts/seed-sellers.ts",
     "check:surge": "pnpm --filter @mercato/shared build && tsx scripts/check-surge.ts"
   },
   "devDependencies": {

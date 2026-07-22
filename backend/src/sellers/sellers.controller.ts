@@ -2,18 +2,17 @@ import {
   Controller,
   Headers,
   Body,
-  HttpCode,
-  HttpException,
-  HttpStatus,
   NotFoundException,
   Param,
   Post,
+  Res,
 } from "@nestjs/common";
+import type { Response } from "express";
 import { AgentEvent } from "@mercato/shared";
 import { EventsBusService } from "../events/events.bus";
 import { SurgeService } from "../pricing/surge.service";
+import { VerifyService } from "../solana/verify.service";
 import { SellersService } from "./sellers.service";
-import { verifyPayment } from "./verify.mock";
 
 @Controller("sellers")
 export class SellersController {
@@ -21,37 +20,43 @@ export class SellersController {
     private readonly sellers: SellersService,
     private readonly surge: SurgeService,
     private readonly events: EventsBusService,
+    private readonly verify: VerifyService,
   ) {}
 
   @Post(":capability")
-  @HttpCode(HttpStatus.OK)
   async handle(
     @Param("capability") capability: string,
     @Headers("x-payment") paymentHeader: string | undefined,
     @Headers("x-quote-id") quoteIdHeader: string | undefined,
     @Body() body: unknown,
-  ): Promise<unknown> {
+    @Res() res: Response,
+  ): Promise<void> {
     const seller = this.sellers.findSeller(capability);
     if (!seller) {
       throw new NotFoundException(`Unknown seller capability: ${capability}`);
     }
 
     if (!paymentHeader) {
-      const requirements = this.sellers.issuePaymentRequirements(seller);
-      throw new HttpException(requirements, HttpStatus.PAYMENT_REQUIRED);
+      res.status(402).json(this.sellers.issuePaymentRequirements(seller));
+      return;
     }
 
-    const quote =
-      this.sellers.resolveQuote(capability, quoteIdHeader) ??
-      this.sellers.issuePaymentRequirements(seller);
-    const verification = await verifyPayment(paymentHeader, quote);
+    if (!quoteIdHeader) {
+      res.status(402).json(this.sellers.issuePaymentRequirements(seller));
+      return;
+    }
 
+    const quote = this.sellers.resolveQuote(capability, quoteIdHeader);
+    if (!quote) {
+      res.status(402).json(this.sellers.issuePaymentRequirements(seller));
+      return;
+    }
+
+    const verification = await this.verify.verifyPayment(paymentHeader, quote);
     if (!verification.ok) {
       const fresh = this.sellers.issuePaymentRequirements(seller);
-      throw new HttpException(
-        { reason: verification.reason, ...fresh },
-        HttpStatus.PAYMENT_REQUIRED,
-      );
+      res.status(402).json({ reason: verification.reason, ...fresh });
+      return;
     }
 
     this.surge.recordRequest(capability);
@@ -63,12 +68,12 @@ export class SellersController {
         seller: seller.name,
         capability,
         amountLamports: quote.amountLamports,
-        txSignature: paymentHeader || "mock",
+        txSignature: paymentHeader,
         timestamp,
       },
       timestamp,
     };
     this.events.emit(event);
-    return fixture;
+    res.status(200).json(fixture);
   }
 }
