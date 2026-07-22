@@ -1,0 +1,3 @@
+{
+  "buildCommand": "cd .. && pnpm --filter @mercato/shared build && pnpm --filter @mercato/web build"
+}
