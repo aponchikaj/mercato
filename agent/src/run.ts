@@ -6,7 +6,7 @@ import { runAgent } from "./loop";
 import { loadAgentKeypair } from "./wallet";
 
 const DEMO_TASK =
-  "Geocode these 3 addresses: '10 Downing Street, London', '1600 Pennsylvania Ave, Washington DC', 'Rustaveli Ave 1, Tbilisi'. For each one, enrich it with one interesting fact using a search service — you choose the provider; watch prices and quality. Then translate the final three-line report into French. Stay within budget.";
+  "Geocode these 3 addresses: '10 Downing Street, London', '350 Fifth Avenue, New York, NY', 'Eiffel Tower, Paris'. For each one, enrich it with one interesting fact using a search service — you choose the provider; watch prices and quality. Then translate the final three-line report into French. Stay within budget.";
 
 async function main(): Promise<void> {
   const payer = loadAgentKeypair();
