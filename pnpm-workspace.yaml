@@ -2,6 +2,7 @@ packages:
   - shared
   - backend
   - web
+  - tests
 
 allowBuilds:
   bufferutil: true

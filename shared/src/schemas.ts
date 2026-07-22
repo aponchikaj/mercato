@@ -4,6 +4,7 @@ import type {
   PaymentRequirements,
   PurchaseRecord,
   ServiceListing,
+  ServiceListingWithPrice,
 } from "./types";
 
 export const ServiceListingSchema = z.object({
@@ -12,6 +13,12 @@ export const ServiceListingSchema = z.object({
   url: z.string().url(),
   basePriceUsd: z.number().positive(),
 }) satisfies z.ZodType<ServiceListing>;
+
+export const ServiceListingWithPriceSchema = ServiceListingSchema.extend({
+  basePriceLamports: z.number().int().nonnegative(),
+}) satisfies z.ZodType<ServiceListingWithPrice>;
+
+export const ServiceListingListSchema = z.array(ServiceListingWithPriceSchema);
 
 export const PaymentRequirementsSchema = z.object({
   amountLamports: z.number().int().nonnegative(),

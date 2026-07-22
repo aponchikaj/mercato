@@ -11,6 +11,11 @@ export interface ServiceListing {
   basePriceUsd: number;
 }
 
+/** A listing enriched with its on-chain price in lamports. */
+export interface ServiceListingWithPrice extends ServiceListing {
+  basePriceLamports: number;
+}
+
 /** Payment terms quoted by a seller for a single purchase. */
 export interface PaymentRequirements {
   amountLamports: number;

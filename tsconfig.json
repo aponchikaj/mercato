@@ -1,8 +1,9 @@
 {
-  "extends": "./tsconfig.base.json",
-  "compilerOptions": {
-    "noEmit": true,
-    "types": ["node"]
-  },
-  "include": ["tests"]
+  "files": [],
+  "references": [
+    { "path": "./shared" },
+    { "path": "./backend" },
+    { "path": "./web" },
+    { "path": "./tests" }
+  ]
 }

@@ -1,34 +1,23 @@
-import { lamportsToSol, type ServiceListing } from "@mercato/shared";
-
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL ?? "http://localhost:4000";
-
-type ListingWithPrice = ServiceListing & { basePriceLamports: number };
-
-async function getListings(): Promise<ListingWithPrice[]> {
-  try {
-    const res = await fetch(`${BACKEND_URL}/listings`, { cache: "no-store" });
-    if (!res.ok) return [];
-    return (await res.json()) as ListingWithPrice[];
-  } catch {
-    return [];
-  }
-}
+import { lamportsToSol } from "@mercato/shared";
+import { getBackendUrl } from "../lib/env";
+import { fetchListings } from "../lib/listings";
 
 export default async function Home() {
-  const listings = await getListings();
+  const listings = await fetchListings();
+  const backendUrl = getBackendUrl();
 
   return (
     <main style={{ fontFamily: "monospace", padding: "2rem" }}>
       <h1>Mercato</h1>
       <p>Agent-to-agent service marketplace — Solana devnet</p>
       {listings.length === 0 ? (
-        <p>No listings (is the backend running on {BACKEND_URL}?)</p>
+        <p>No listings (is the backend running on {backendUrl}?)</p>
       ) : (
         <ul>
-          {listings.map((l) => (
-            <li key={l.name}>
-              {l.name} — {l.capability} — ${l.basePriceUsd} (
-              {lamportsToSol(l.basePriceLamports)} SOL)
+          {listings.map((listing) => (
+            <li key={listing.name}>
+              {listing.name} — {listing.capability} — ${listing.basePriceUsd} (
+              {lamportsToSol(listing.basePriceLamports)} SOL)
             </li>
           ))}
         </ul>
