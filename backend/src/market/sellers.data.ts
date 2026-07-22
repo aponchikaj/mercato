@@ -10,28 +10,28 @@ const RAW_SELLERS: SellerEntry[] = [
     capability: "geocoder",
     url: `${BACKEND_ORIGIN}/sellers/geocoder`,
     basePriceUsd: 0.002,
-    keyFile: "seller-geocoder.json",
+    keyFile: "geocoder.json",
   },
   {
     name: "Translator",
     capability: "translator",
     url: `${BACKEND_ORIGIN}/sellers/translator`,
     basePriceUsd: 0.005,
-    keyFile: "seller-translator.json",
+    keyFile: "translator.json",
   },
   {
     name: "Search Cheap",
     capability: "search-cheap",
     url: `${BACKEND_ORIGIN}/sellers/search-cheap`,
     basePriceUsd: 0.003,
-    keyFile: "seller-search-cheap.json",
+    keyFile: "search-cheap.json",
   },
   {
     name: "Search Pro",
     capability: "search-pro",
     url: `${BACKEND_ORIGIN}/sellers/search-pro`,
     basePriceUsd: 0.009,
-    keyFile: "seller-search-pro.json",
+    keyFile: "search-pro.json",
   },
 ];
 
