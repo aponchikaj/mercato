@@ -47,3 +47,15 @@ pnpm dev               # backend on :4000, web on :3000
 ## Environment
 
 All variables live in the root `.env` (see `.env.example`): `SOLANA_RPC_URL`, `LLM_API_KEY`, `AGENT_BUDGET_USD`, `BACKEND_PORT`, `NEXT_PUBLIC_BACKEND_URL`.
+
+## Pre-push checklist
+
+Run before every push to `main`:
+
+```bash
+pnpm typecheck
+pnpm test:transfer
+```
+
+Both must be green. Local editor and tool configuration stays out of the repo —
+keep those paths in `.git/info/exclude`, never in tracked files.

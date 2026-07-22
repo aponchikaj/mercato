@@ -18,6 +18,10 @@ next-env.d.ts
 !README.md
 !keys/README.md
 
+# pnpm-only workspace
+package-lock.json
+yarn.lock
+
 # misc
 .DS_Store
 coverage/
