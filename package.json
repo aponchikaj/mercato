@@ -8,10 +8,14 @@
     "build": "pnpm -r build",
     "typecheck": "pnpm -r typecheck",
     "test:transfer": "pnpm --filter @mercato/shared build && pnpm --filter @mercato/tests test",
-    "gen:keys": "tsx scripts/gen-keys.ts"
+    "gen:keys": "tsx scripts/gen-keys.ts",
+    "airdrop": "tsx scripts/airdrop.ts"
   },
   "devDependencies": {
+    "@mercato/shared": "workspace:*",
     "@solana/web3.js": "^1.98.0",
+    "@types/node": "^22.15.0",
+    "dotenv": "^16.5.0",
     "tsx": "^4.20.3",
     "typescript": "^5.8.3"
   }
