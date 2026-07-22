@@ -6,6 +6,8 @@ import type {
   ServiceListing,
   ServiceListingWithPrice,
   MarketService,
+  MarketBalance,
+  MarketBalancesResponse,
 } from "./types";
 
 export const ServiceListingSchema = z.object({
@@ -27,6 +29,18 @@ export const MarketServiceSchema = ServiceListingSchema.extend({
 }) satisfies z.ZodType<MarketService>;
 
 export const MarketServiceListSchema = z.array(MarketServiceSchema);
+
+export const MarketBalanceSchema = z.object({
+  label: z.string().min(1),
+  pubkey: z.string().min(32).max(44),
+  lamports: z.number().int().nonnegative(),
+  sol: z.number().nonnegative(),
+}) satisfies z.ZodType<MarketBalance>;
+
+export const MarketBalancesResponseSchema = z.object({
+  balances: z.array(MarketBalanceSchema),
+  stale: z.literal(true).optional(),
+}) satisfies z.ZodType<MarketBalancesResponse>;
 
 export const PaymentRequirementsSchema = z.object({
   amountLamports: z.number().int().nonnegative(),

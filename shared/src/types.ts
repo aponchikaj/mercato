@@ -22,6 +22,20 @@ export interface MarketService extends ServiceListing {
   currentPriceLamports: number;
 }
 
+/** Wallet balance row for the market dashboard. */
+export interface MarketBalance {
+  label: string;
+  pubkey: string;
+  lamports: number;
+  sol: number;
+}
+
+/** GET /market/balances response. */
+export interface MarketBalancesResponse {
+  balances: MarketBalance[];
+  stale?: true;
+}
+
 /** Payment terms quoted by a seller for a single purchase. */
 export interface PaymentRequirements {
   amountLamports: number;
