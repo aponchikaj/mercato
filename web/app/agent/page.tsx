@@ -2,8 +2,10 @@
 
 import { useMemo } from "react";
 import { lamportsToUsd } from "@mercato/shared";
+import { useState } from "react";
 import { AppShell } from "../../components/AppShell";
 import { ReasoningStream } from "../../components/ReasoningStream";
+import { CallDistribution } from "../../components/charts/CallDistribution";
 import { SpendChart } from "../../components/charts/SpendChart";
 import { TxLog } from "../../components/TxLog";
 import { USE_FAKE } from "../../lib/config";
@@ -15,6 +17,9 @@ const DEMO_BUDGET_USD = 5;
 export default function AgentPage() {
   const { events, status } = useAgentEvents();
   const balances = useBalances();
+  // Routing-policy sliders (advisory display; the enforced gate is in agent code).
+  const [maxCallUsd, setMaxCallUsd] = useState(0.025);
+  const [qualityBar, setQualityBar] = useState(70);
 
   const spentUsd = useMemo(
     () =>
@@ -81,6 +86,64 @@ export default function AgentPage() {
               Cumulative spend
             </h3>
             <SpendChart events={events} />
+          </div>
+
+          <div className="panel p-5">
+            <h3 className="mb-2 text-sm font-semibold text-[var(--text-dim)]">
+              Call distribution
+            </h3>
+            <CallDistribution events={events} />
+          </div>
+
+          {/* Routing policy panel */}
+          <div className="panel flex flex-col gap-4 p-5">
+            <h3 className="text-sm font-semibold text-[var(--text-dim)]">
+              Routing policy
+            </h3>
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-[var(--text-faint)]">max price / call</span>
+                <span className="mono">${maxCallUsd.toFixed(3)}</span>
+              </div>
+              <input
+                type="range"
+                className="policy-slider"
+                min={0.001}
+                max={0.05}
+                step={0.001}
+                value={maxCallUsd}
+                onChange={(e) => setMaxCallUsd(Number(e.target.value))}
+              />
+              <div className="mono flex justify-between text-[10px] text-[var(--text-faint)]">
+                <span>$0.001</span>
+                <span>$0.025</span>
+                <span>$0.05</span>
+              </div>
+            </div>
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-[var(--text-faint)]">quality threshold</span>
+                <span className="mono">{qualityBar}%</span>
+              </div>
+              <input
+                type="range"
+                className="policy-slider"
+                min={0}
+                max={100}
+                step={5}
+                value={qualityBar}
+                onChange={(e) => setQualityBar(Number(e.target.value))}
+              />
+              <div className="mono flex justify-between text-[10px] text-[var(--text-faint)]">
+                <span>0%</span>
+                <span>50%</span>
+                <span>100%</span>
+              </div>
+            </div>
+            <p className="text-xs leading-relaxed text-[var(--text-faint)]">
+              Advisory targets — the hard budget gate is enforced in agent code
+              before signing.
+            </p>
           </div>
 
           <div className="min-h-56 flex-1">
