@@ -3,6 +3,7 @@ packages:
   - backend
   - web
   - tests
+  - agent
 
 allowBuilds:
   bufferutil: true
