@@ -26,10 +26,6 @@ type ChatCompletionResult =
   | { ok: true; response: OpenAI.Chat.ChatCompletion }
   | { ok: false; abortMessage: string };
 
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
-}
-
 function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => {
     setTimeout(resolve, ms);
@@ -120,33 +116,6 @@ export function postEvent(event: AgentEvent): void {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(event),
   }).catch(() => {});
-}
-
-function emitPurchaseFromResult(
-  result: unknown,
-  capability: string,
-): void {
-  if (!isRecord(result) || !isRecord(result.paid)) {
-    return;
-  }
-
-  const { paid } = result;
-  if (
-    typeof paid.txSignature !== "string" ||
-    typeof paid.amountLamports !== "number"
-  ) {
-    return;
-  }
-
-  postEvent({
-    kind: "purchase",
-    payload: {
-      capability,
-      amountLamports: paid.amountLamports,
-      txSignature: paid.txSignature,
-    },
-    timestamp: Date.now(),
-  });
 }
 
 function emitResultEvent(answer: string, ledger: Ledger): void {
@@ -294,17 +263,11 @@ export async function runAgent(
           timestamp: Date.now(),
         });
 
+        // No purchase event here: the backend emits the authoritative one
+        // after on-chain verification (sellers.controller).
         const result = await executeTool(toolName, parsedArgs, ledger, payer);
         toolCallCount += 1;
         answeredIds.add(toolCall.id);
-
-        if (toolName === "call_service" && isRecord(parsedArgs)) {
-          const capability =
-            typeof parsedArgs.capability === "string"
-              ? parsedArgs.capability
-              : "unknown";
-          emitPurchaseFromResult(result, capability);
-        }
 
         messages.push({
           role: "tool",
