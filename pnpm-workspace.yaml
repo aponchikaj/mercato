@@ -1,0 +1,10 @@
+packages:
+  - shared
+  - backend
+  - web
+
+allowBuilds:
+  bufferutil: true
+  esbuild: true
+  sharp: true
+  utf-8-validate: true

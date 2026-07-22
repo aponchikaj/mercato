@@ -1,0 +1,13 @@
+---
+description: Mercato project structure and core conventions
+alwaysApply: true
+---
+
+# Mercato — core rules
+
+- pnpm workspace monorepo: `shared/` (contracts), `backend/` (NestJS), `web/` (Next.js app router).
+- TypeScript strict mode everywhere. Never use `any`; prefer `unknown` + narrowing.
+- All cross-track contracts (types, zod schemas, unit conversions) live in `@mercato/shared`. Never redefine them locally in backend or web.
+- Environment variables are read ONLY through `parseEnv()` from `@mercato/shared` — no raw `process.env.X` reads outside `parseEnv` (exception: `NEXT_PUBLIC_*` in web).
+- The single `.env` lives at the repo root and is gitignored; keep `.env.example` in sync when adding variables.
+- Network is always `solana-devnet`; token is always `SOL` for payments.

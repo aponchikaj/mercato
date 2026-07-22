@@ -1,0 +1,15 @@
+---
+description: Backend (NestJS) and web (Next.js) conventions
+globs:
+  - "backend/**/*.ts"
+  - "web/**/*.ts"
+  - "web/**/*.tsx"
+alwaysApply: false
+---
+
+# App conventions
+
+- Backend: NestJS modules/controllers/services; one module per feature. Validate request bodies with shared zod schemas before use. Port comes from `parseEnv().BACKEND_PORT`.
+- Web: Next.js app router, server components by default, `"use client"` only when interactivity requires it. Backend base URL comes from `NEXT_PUBLIC_BACKEND_URL` (default `http://localhost:4000`).
+- Import shared code from `@mercato/shared` (the built package) — never deep-import `shared/src/*` files by relative path.
+- After changing `shared/`, run `pnpm --filter @mercato/shared build` so backend and web pick up the new dist.

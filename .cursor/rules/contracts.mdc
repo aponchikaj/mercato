@@ -1,0 +1,13 @@
+---
+description: Shared contract rules — types and zod schemas
+globs:
+  - "shared/**/*.ts"
+alwaysApply: false
+---
+
+# Shared contracts
+
+- Every interface in `shared/src/types.ts` has a matching zod schema in `shared/src/schemas.ts` named `<TypeName>Schema`, checked with `satisfies z.ZodType<TypeName>`. Change them together.
+- `shared` contains contracts only: types, schemas, unit conversions. No business logic, no I/O, no framework imports.
+- Validate ALL external data (HTTP bodies, RPC responses, env) with the shared schemas at the boundary; trust types only after parsing.
+- Breaking a shared contract requires committing `shared/` first and telling both tracks to pull before continuing.

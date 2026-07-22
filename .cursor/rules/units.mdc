@@ -1,0 +1,14 @@
+---
+description: Unit conversion rules — lamports, SOL, USD
+globs:
+  - "**/*.ts"
+  - "**/*.tsx"
+alwaysApply: false
+---
+
+# Unit conversions
+
+- `shared/src/units.ts` is the ONLY module allowed to convert between SOL, lamports, and USD. Import `lamportsToSol`, `solToLamports`, `usdToLamports`, `lamportsToUsd` from `@mercato/shared` — never inline `* 1e9`, `/ 1_000_000_000`, or a SOL price anywhere else.
+- Lamports are ALWAYS integers. Any function producing lamports must `Math.round`.
+- The SOL/USD rate is the hardcoded demo rate (`SOL_PRICE_USD = 150`) in units.ts; do not fetch live prices or duplicate the constant.
+- Amounts crossing an API boundary are lamports (integers), never SOL floats.
