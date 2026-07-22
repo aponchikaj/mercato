@@ -17,7 +17,7 @@ async function bootstrap(): Promise<void> {
   app.use(requestLoggingMiddleware);
   app.useGlobalFilters(new GlobalExceptionFilter());
   app.enableCors({
-    origin: ["http://localhost:3000", "http://localhost:5173"],
+    origin: ["http://localhost:3000", "http://localhost:5173", /\.vercel\.app$/],
   });
   await app.listen(env.BACKEND_PORT);
   // eslint-disable-next-line no-console

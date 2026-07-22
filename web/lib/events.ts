@@ -15,6 +15,9 @@ export const subscribeEvents: EventSubscriber = (onEvent, onStatus) => {
   let source: EventSource | null = null;
   let reconnectTimer: ReturnType<typeof setTimeout> | null = null;
   let closed = false;
+  // The backend replays its ring buffer to every new subscriber, so a
+  // reconnect would re-deliver history — dedupe across the subscription.
+  const seen = new Set<string>();
 
   const connect = (): void => {
     if (closed) return;
@@ -31,6 +34,9 @@ export const subscribeEvents: EventSubscriber = (onEvent, onStatus) => {
       }
       const parsed = AgentEventSchema.safeParse(data);
       if (!parsed.success) return; // silently drop invalid events
+      const key = `${parsed.data.kind}:${parsed.data.timestamp}`;
+      if (seen.has(key)) return; // ring-buffer replay after reconnect
+      seen.add(key);
       onEvent({
         kind: parsed.data.kind,
         payload: parsed.data.payload ?? null,
