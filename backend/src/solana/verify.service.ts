@@ -15,6 +15,15 @@ function sleep(ms: number): Promise<void> {
 @Injectable()
 export class VerifyService {
   private readonly seen = new Set<string>();
+  private connectionCache: Connection | null = null;
+
+  private get connection(): Connection {
+    this.connectionCache ??= new Connection(
+      parseEnv().SOLANA_RPC_URL,
+      "confirmed",
+    );
+    return this.connectionCache;
+  }
 
   async verifyPayment(
     signature: string,
@@ -24,7 +33,7 @@ export class VerifyService {
       return { ok: false, reason: "replayed signature" };
     }
 
-    const connection = new Connection(parseEnv().SOLANA_RPC_URL, "confirmed");
+    const connection = this.connection;
 
     let tx;
     try {
