@@ -21,9 +21,11 @@ export function ReasoningStream({ events }: ReasoningStreamProps) {
   }, [events]);
 
   return (
-    <div className="flex h-full flex-col rounded-lg border border-neutral-800 bg-neutral-900 p-4">
-      <h2 className="mb-2 text-lg text-neutral-400">agent reasoning</h2>
-      <div className="flex-1 space-y-3 overflow-y-auto pr-1">
+    <div className="panel flex h-full flex-col p-5">
+      <h2 className="mb-3 text-sm font-semibold text-[var(--text-dim)]">
+        Live reasoning
+      </h2>
+      <div className="scroll-thin flex-1 space-y-3 overflow-y-auto pr-1">
         {events.map((e, i) => (
           <Bubble key={`${e.timestamp}-${i}`} event={e} />
         ))}
@@ -38,7 +40,7 @@ function Bubble({ event }: { event: AgentEvent }) {
 
   if (kind === "reasoning" && isReasoningPayload(payload)) {
     return (
-      <p className="rounded-md bg-neutral-800/60 px-3 py-2 text-neutral-400">
+      <p className="panel-inset px-3.5 py-2.5 text-sm leading-relaxed text-[var(--text-dim)]">
         {payload.text}
       </p>
     );

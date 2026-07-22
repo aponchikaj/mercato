@@ -17,9 +17,11 @@ export function TxLog({ events }: TxLogProps) {
     .filter(isPurchasePayload);
 
   return (
-    <div className="flex h-full flex-col rounded-lg border border-neutral-800 bg-neutral-900 p-4">
-      <h2 className="mb-2 text-lg text-neutral-400">transactions</h2>
-      <div className="flex-1 overflow-y-auto">
+    <div className="panel flex h-full flex-col p-5">
+      <h2 className="mb-3 text-sm font-semibold text-[var(--text-dim)]">
+        On-chain receipts
+      </h2>
+      <div className="scroll-thin flex-1 overflow-y-auto">
         {purchases.length === 0 ? (
           <p className="text-neutral-600">no transactions yet</p>
         ) : (
