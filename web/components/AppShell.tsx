@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
@@ -27,7 +28,16 @@ export function AppShell({ title, children }: AppShellProps) {
         {/* Sidebar */}
         <aside className="hidden w-60 shrink-0 flex-col gap-6 border-r border-white/[0.06] p-5 md:flex">
           <Link href="/markets" className="flex items-center gap-2.5 px-1">
-            <span className="glow-cta flex h-8 w-8 items-center justify-center text-sm">M</span>
+            <span className="glow-cta flex h-9 w-9 items-center justify-center overflow-hidden">
+              <Image
+                src="/logo.jpeg"
+                alt="Mercato logo"
+                width={36}
+                height={36}
+                className="h-full w-full object-cover invert"
+                priority
+              />
+            </span>
             <span className="text-lg font-semibold tracking-tight">Mercato</span>
           </Link>
 
