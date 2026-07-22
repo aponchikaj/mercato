@@ -8,11 +8,11 @@
  */
 
 :root {
-  --outer-a: #e9e4f7;
-  --outer-b: #d9d2ef;
-  --surface: #0a0a10;
-  --panel: #14131c;
-  --panel-2: #191826;
+  --outer-a: #1a1a1c;
+  --outer-b: #101012;
+  --surface: #0e0e10;
+  --panel: #17171a;
+  --panel-2: #1e1e22;
   --hairline: rgba(255, 255, 255, 0.07);
   --hairline-strong: rgba(255, 255, 255, 0.12);
   --text: #f2f1f7;
@@ -34,9 +34,7 @@ body {
 
 body {
   font-family: var(--font-ui);
-  background:
-    radial-gradient(60rem 40rem at 15% 0%, rgba(139, 92, 246, 0.14), transparent 60%),
-    linear-gradient(160deg, var(--outer-a), var(--outer-b));
+  background: linear-gradient(160deg, var(--outer-a), var(--outer-b));
   color: var(--text);
 }
 
@@ -45,11 +43,11 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
-/* Full-bleed dark app surface with ambient violet radials */
+/* Full-bleed premium charcoal surface with faint ambient depth */
 .app-frame {
   background:
-    radial-gradient(50rem 30rem at 80% -10%, rgba(139, 92, 246, 0.12), transparent 55%),
-    radial-gradient(40rem 28rem at -10% 110%, rgba(139, 92, 246, 0.08), transparent 60%),
+    radial-gradient(50rem 30rem at 80% -10%, rgba(255, 255, 255, 0.035), transparent 55%),
+    radial-gradient(40rem 28rem at -10% 110%, rgba(139, 92, 246, 0.04), transparent 60%),
     var(--surface);
 }
 

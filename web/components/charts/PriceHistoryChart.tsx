@@ -71,7 +71,7 @@ export function PriceHistoryChart({ services }: { services: MarketService[] }) {
           />
           <Tooltip
             contentStyle={{
-              background: "#191826",
+              background: "#1e1e22",
               border: "1px solid rgba(255,255,255,0.12)",
               borderRadius: 12,
               fontSize: 12,
