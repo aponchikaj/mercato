@@ -26,17 +26,26 @@ export class VerifyService {
 
     const connection = new Connection(parseEnv().SOLANA_RPC_URL, "confirmed");
 
-    let tx = await connection.getParsedTransaction(signature, {
-      commitment: "confirmed",
-      maxSupportedTransactionVersion: 0,
-    });
-
-    for (let attempt = 1; attempt < FETCH_RETRIES && tx === null; attempt += 1) {
-      await sleep(FETCH_RETRY_DELAY_MS);
+    let tx;
+    try {
       tx = await connection.getParsedTransaction(signature, {
         commitment: "confirmed",
         maxSupportedTransactionVersion: 0,
       });
+
+      for (
+        let attempt = 1;
+        attempt <= FETCH_RETRIES && tx === null;
+        attempt += 1
+      ) {
+        await sleep(FETCH_RETRY_DELAY_MS);
+        tx = await connection.getParsedTransaction(signature, {
+          commitment: "confirmed",
+          maxSupportedTransactionVersion: 0,
+        });
+      }
+    } catch {
+      return { ok: false, reason: "invalid signature or rpc error" };
     }
 
     if (tx === null) {
