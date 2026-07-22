@@ -22,8 +22,8 @@ export function AppShell({ title, children }: AppShellProps) {
   const agent = balances?.balances.find((b) => b.label === "Agent");
 
   return (
-    <div className="min-h-screen p-3 sm:p-6">
-      <div className="app-frame mx-auto flex min-h-[calc(100vh-3rem)] max-w-[1440px]">
+    <div className="min-h-screen">
+      <div className="app-frame flex min-h-screen w-full">
         {/* Sidebar */}
         <aside className="hidden w-60 shrink-0 flex-col gap-6 border-r border-white/[0.06] p-5 md:flex">
           <Link href="/markets" className="flex items-center gap-2.5 px-1">

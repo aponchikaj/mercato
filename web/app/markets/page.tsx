@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { lamportsToUsd } from "@mercato/shared";
 import { AppShell } from "../../components/AppShell";
+import { PriceHistoryChart } from "../../components/charts/PriceHistoryChart";
 import { isPurchasePayload } from "../../lib/eventPayloads";
 import { useAgentEvents, useServices } from "../../lib/hooks";
 
@@ -69,6 +70,19 @@ export default function MarketsPage() {
               tone={spentUsd > 0 ? "green" : undefined}
             />
             <Stat label="settlement" value="SOL · devnet" />
+          </section>
+
+          {/* Live price history */}
+          <section className="panel p-5">
+            <div className="mb-2 flex items-center gap-3">
+              <h2 className="text-sm font-semibold text-[var(--text-dim)]">
+                Price per call — live surge
+              </h2>
+              <span className="pill ml-auto px-3 py-1 text-xs text-[var(--text-faint)]">
+                last ~3 min
+              </span>
+            </div>
+            <PriceHistoryChart services={services} />
           </section>
 
           {/* Seller rows */}

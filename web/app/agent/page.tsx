@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { lamportsToUsd } from "@mercato/shared";
 import { AppShell } from "../../components/AppShell";
 import { ReasoningStream } from "../../components/ReasoningStream";
+import { SpendChart } from "../../components/charts/SpendChart";
 import { TxLog } from "../../components/TxLog";
 import { USE_FAKE } from "../../lib/config";
 import { isPurchasePayload } from "../../lib/eventPayloads";
@@ -73,6 +74,13 @@ export default function AgentPage() {
               The budget gate runs in code before any transaction is signed — the
               agent cannot overspend.
             </p>
+          </div>
+
+          <div className="panel p-5">
+            <h3 className="mb-2 text-sm font-semibold text-[var(--text-dim)]">
+              Cumulative spend
+            </h3>
+            <SpendChart events={events} />
           </div>
 
           <div className="min-h-56 flex-1">
