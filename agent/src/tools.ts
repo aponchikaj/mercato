@@ -2,16 +2,12 @@ import { Keypair } from "@solana/web3.js";
 import type OpenAI from "openai";
 import { z } from "zod";
 import {
+  MarketServiceListSchema,
   PaymentRequirementsSchema,
-  ServiceListingWithPriceSchema,
 } from "@mercato/shared";
 import { BACKEND_URL } from "./env";
 import { Ledger } from "./ledger";
 import { payQuote } from "./payments";
-
-const ServiceListingWithSurgeSchema =
-  ServiceListingWithPriceSchema.passthrough();
-const ServiceListingListSchema = z.array(ServiceListingWithSurgeSchema);
 
 const CallServiceArgsSchema = z.object({
   capability: z.string().min(1),
@@ -75,7 +71,7 @@ export async function listServices(): Promise<unknown> {
     }
 
     const raw: unknown = await response.json();
-    const parsed = ServiceListingListSchema.safeParse(raw);
+    const parsed = MarketServiceListSchema.safeParse(raw);
     if (!parsed.success) {
       return { error: "invalid services response" };
     }
