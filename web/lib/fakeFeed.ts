@@ -1,10 +1,11 @@
 // demo fallback — flip USE_FAKE in config.ts
 import {
   type AgentEvent,
+  type MarketService,
   type PurchaseRecord,
-  type ServiceListingWithPrice,
   usdToLamports,
 } from "@mercato/shared";
+import type { EventSubscriber } from "./events";
 
 const BASE58 = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
 
@@ -24,32 +25,33 @@ interface SellerSeed {
   basePriceUsd: number;
 }
 
-// The 4 sellers. basePriceUsd is the fixed sticker; the on-chain price
-// (basePriceLamports) drifts upward on each getFakeServices() call.
+// Mirror the backend's sellers (see backend/src/market/sellers.data.ts) so the
+// fallback looks identical to the live feed. currentPrice* drifts upward on
+// each getFakeServices() call so the price-flash is visible on stage.
 const SELLERS: SellerSeed[] = [
-  { name: "geocoder", capability: "geocode", url: "https://geocoder.demo/x402", basePriceUsd: 0.002 },
-  { name: "translator", capability: "translate", url: "https://translator.demo/x402", basePriceUsd: 0.005 },
-  { name: "search-cheap", capability: "web-search", url: "https://search-cheap.demo/x402", basePriceUsd: 0.003 },
-  { name: "search-pro", capability: "web-search", url: "https://search-pro.demo/x402", basePriceUsd: 0.009 },
+  { name: "Geocoder", capability: "geocoder", url: "http://localhost:4000/sellers/geocoder", basePriceUsd: 0.002 },
+  { name: "Translator", capability: "translator", url: "http://localhost:4000/sellers/translator", basePriceUsd: 0.005 },
+  { name: "Search Cheap", capability: "search-cheap", url: "http://localhost:4000/sellers/search-cheap", basePriceUsd: 0.003 },
+  { name: "Search Pro", capability: "search-pro", url: "http://localhost:4000/sellers/search-pro", basePriceUsd: 0.009 },
 ];
 
-// Per-seller live lamport price, seeded from the USD sticker and drifted up.
-const currentLamports = new Map<string, number>(
-  SELLERS.map((s) => [s.name, usdToLamports(s.basePriceUsd)]),
+const currentUsd = new Map<string, number>(
+  SELLERS.map((s) => [s.name, s.basePriceUsd]),
 );
 
-export function getFakeServices(): ServiceListingWithPrice[] {
+export function getFakeServices(): MarketService[] {
   return SELLERS.map((s) => {
-    const prev = currentLamports.get(s.name) ?? usdToLamports(s.basePriceUsd);
-    // Drift upward 0.5%–4% each call so the price-flash is visible on stage.
-    const next = Math.round(prev * (1 + 0.005 + Math.random() * 0.035));
-    currentLamports.set(s.name, next);
+    const prev = currentUsd.get(s.name) ?? s.basePriceUsd;
+    // Drift upward 0.5%–4% each call.
+    const nextUsd = prev * (1 + 0.005 + Math.random() * 0.035);
+    currentUsd.set(s.name, nextUsd);
     return {
       name: s.name,
       capability: s.capability,
       url: s.url,
       basePriceUsd: s.basePriceUsd,
-      basePriceLamports: next,
+      currentPriceUsd: nextUsd,
+      currentPriceLamports: usdToLamports(nextUsd),
     };
   });
 }
@@ -73,7 +75,7 @@ const SCRIPT: Array<() => Pick<AgentEvent, "kind" | "payload">> = [
       text: "Task: geocode 3 addresses, translate the results to French, then web-search each. Fetching quotes from all sellers.",
     },
   }),
-  () => ({ kind: "purchase", payload: purchase("geocoder", "geocode", 0.002) }),
+  () => ({ kind: "purchase", payload: purchase("Geocoder", "geocoder", 0.002) }),
   () => ({
     kind: "decision",
     payload: {
@@ -82,7 +84,7 @@ const SCRIPT: Array<() => Pick<AgentEvent, "kind" | "payload">> = [
       to: "search-pro",
     },
   }),
-  () => ({ kind: "purchase", payload: purchase("search-pro", "web-search", 0.009) }),
+  () => ({ kind: "purchase", payload: purchase("Search Pro", "search-pro", 0.009) }),
   () => ({
     kind: "result",
     payload: {
@@ -95,9 +97,9 @@ const SCRIPT: Array<() => Pick<AgentEvent, "kind" | "payload">> = [
   }),
 ];
 
-export function subscribeFakeEvents(
-  onEvent: (e: AgentEvent) => void,
-): () => void {
+export const subscribeFakeEvents: EventSubscriber = (onEvent, onStatus) => {
+  // The fake feed is always "connected".
+  onStatus?.("open");
   let index = 0;
   const timer = setInterval(() => {
     const build = SCRIPT[index % SCRIPT.length];
@@ -107,4 +109,4 @@ export function subscribeFakeEvents(
     onEvent({ kind, payload, timestamp: Date.now() });
   }, 1500);
   return () => clearInterval(timer);
-}
+};

@@ -5,9 +5,11 @@ import { lamportsToUsd } from "@mercato/shared";
 export interface BalanceStripProps {
   spentLamports: number;
   budgetUsd: number;
+  /** Live on-chain agent balance (SOL), when available from /market/balances. */
+  agentSol?: number;
 }
 
-export function BalanceStrip({ spentLamports, budgetUsd }: BalanceStripProps) {
+export function BalanceStrip({ spentLamports, budgetUsd, agentSol }: BalanceStripProps) {
   // Convert ONLY with lamportsToUsd from @mercato/shared.
   const spentUsd = lamportsToUsd(spentLamports);
   const remainingUsd = Math.max(budgetUsd - spentUsd, 0);
@@ -32,6 +34,11 @@ export function BalanceStrip({ spentLamports, budgetUsd }: BalanceStripProps) {
         <span>spent ${spentUsd.toFixed(4)}</span>
         <span>remaining ${remainingUsd.toFixed(4)}</span>
       </div>
+      {agentSol !== undefined && (
+        <div className="text-sm text-neutral-500 tabular-nums">
+          agent wallet: {agentSol.toFixed(4)} SOL
+        </div>
+      )}
     </div>
   );
 }

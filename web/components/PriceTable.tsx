@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { type ServiceListingWithPrice, lamportsToUsd } from "@mercato/shared";
+import { type MarketService } from "@mercato/shared";
 
 export interface PriceTableProps {
-  services: ServiceListingWithPrice[];
+  services: MarketService[];
 }
 
 const FLASH_MS = 600;
@@ -17,10 +17,10 @@ export function PriceTable({ services }: PriceTableProps) {
     const risen: string[] = [];
     for (const s of services) {
       const prev = prevPrices.current.get(s.name);
-      if (prev !== undefined && s.basePriceLamports > prev) {
+      if (prev !== undefined && s.currentPriceLamports > prev) {
         risen.push(s.name);
       }
-      prevPrices.current.set(s.name, s.basePriceLamports);
+      prevPrices.current.set(s.name, s.currentPriceLamports);
     }
     if (risen.length === 0) return;
 
@@ -65,7 +65,7 @@ export function PriceTable({ services }: PriceTableProps) {
                 ${s.basePriceUsd.toFixed(4)}
               </td>
               <td className="py-1.5 text-right text-neutral-100 tabular-nums">
-                ${lamportsToUsd(s.basePriceLamports).toFixed(4)}
+                ${s.currentPriceUsd.toFixed(4)}
               </td>
             </tr>
           ))}
