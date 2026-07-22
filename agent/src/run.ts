@@ -1,4 +1,4 @@
-import { Connection } from "@solana/web3.js";
+﻿import { Connection } from "@solana/web3.js";
 import { lamportsToSol, lamportsToUsd } from "@mercato/shared";
 import { env } from "./env";
 import { Ledger } from "./ledger";
@@ -7,6 +7,9 @@ import { loadAgentKeypair } from "./wallet";
 
 const DEMO_TASK =
   "Geocode these 3 addresses: '10 Downing Street, London', '350 Fifth Avenue, New York, NY', 'Eiffel Tower, Paris'. For each one, enrich it with one interesting fact using a search service — you choose the provider; watch prices and quality. Then translate the final three-line report into French. Stay within budget.";
+
+// A custom task can be passed on the command line; DEMO_TASK is the fallback.
+const task = process.argv.slice(2).join(" ").trim() || DEMO_TASK;
 
 async function main(): Promise<void> {
   const payer = loadAgentKeypair();
@@ -17,7 +20,7 @@ async function main(): Promise<void> {
   console.log(`Balance: ${lamportsToSol(balanceLamports)} SOL`);
 
   const ledger = new Ledger();
-  const answer = await runAgent(DEMO_TASK, ledger, payer);
+  const answer = await runAgent(task, ledger, payer);
 
   console.log("\n--- Final answer ---\n");
   console.log(answer);
