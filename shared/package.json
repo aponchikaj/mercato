@@ -13,6 +13,7 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
+    "@types/node": "^26.1.1",
     "typescript": "^5.8.3"
   }
 }
